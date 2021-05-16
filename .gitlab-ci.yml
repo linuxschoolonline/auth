@@ -3,5 +3,4 @@ before_script:
 
 build_image:
   script:
-    - cd auth
     - docker build -t auth .
