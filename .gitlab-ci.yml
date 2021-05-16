@@ -27,7 +27,7 @@ test:
     - redis:latest
   script:
     - docker pull $IMAGE
-    - docker run -e REDIS_HOST=redis -e REDIS_PORT=6379
+    - docker run -e REDIS_HOST=redis -e REDIS_PORT=6379 $IMAGE
 
 release:
   stage: release
