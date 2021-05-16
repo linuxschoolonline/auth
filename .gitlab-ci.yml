@@ -25,6 +25,7 @@ test:
   image: node
   services:
     - redis:latest
+    - mongo:latest
   variables:
     REDIS_HOST: redis
     REDIS_PORT: 6379
