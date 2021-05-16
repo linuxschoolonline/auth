@@ -4,7 +4,8 @@ stages:
   - release
 
 services:
-  - redis:latest
+  - name: redis:latest
+    alias: redis
 
 variables:
   IMAGE: $CI_REGISTRY/skyvalley/auth:$CI_COMMIT_SHORT_SHA
