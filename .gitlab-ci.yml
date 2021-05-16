@@ -4,8 +4,7 @@ stages:
   - release
 
 variables:
-  TEST_IMAGE: $CI_REGISTRY/skyvalley/auth:$CI_COMMIT_REF_NAME
-  RELEASE_IMAGE: $CI_REGISTRY/skyvalley/auth:latest
+  IMAGE: $CI_REGISTRY/skyvalley/auth:$CI_COMMIT_REF_NAME
 
 before_script:
   - docker login -u $CI_REGISTRY_USER -p $CI_REGISTRY_PASSWORD $CI_REGISTRY
@@ -13,8 +12,8 @@ before_script:
 build:
   stage: build
   script:
-    - docker build -t $TEST_IMAGE .
-    - docker push $TEST_IMAGE
+    - docker build -t $IMAGE .
+    - docker push $IMAGE
 
 test:
   stage: test
@@ -24,9 +23,6 @@ test:
 release:
   stage: release
   script:
-    - docker pull $TEST_IMAGE
-    - docker tag $TEST_IMAGE $RELEASE_IMAGE
-    - docker push $RELEASE_IMAGE
-    - docker push $RELEASE_IMAGE
+    - echo "This is where the image switching should happen"
   only:
     - master
