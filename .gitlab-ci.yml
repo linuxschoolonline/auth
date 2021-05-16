@@ -1,10 +1,13 @@
 stages:
   - build
+  - connect
   - test
   - release
 
 services:
-  - docker:19.03.12-dind
+#  - docker:19.03.12-dind
+  - name: redis:latest
+    alias: redis
 
 variables:
   DOCKER_TLS_CERTDIR: ""
@@ -21,11 +24,15 @@ build:
     - docker push $IMAGE
     - docker push $IMAGE_LATEST
 
+connect:
+  # Connect to PostgreSQL database as user postgres, without password
+  image: redis
+  script:
+  - redis-cli -h redis PING
+
+
 test:
   stage: test
-  services:
-    - name: redis:latest
-      alias: redis
   script:
     - docker pull $IMAGE
     - docker run -e REDIS_HOST=redis -e REDIS_PORT=6379 $IMAGE
