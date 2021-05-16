@@ -13,11 +13,10 @@ variables:
   IMAGE: $CI_REGISTRY/skyvalley/auth:$CI_COMMIT_SHORT_SHA
   IMAGE_LATEST: $CI_REGISTRY/skyvalley/auth:latest
 
-before_script:
-  - echo "$CI_REGISTRY_PASSWORD" | docker login $CI_REGISTRY --username $CI_REGISTRY_USER --password-stdin
-
 build:
   stage: build
+  before_script:
+    - echo "$CI_REGISTRY_PASSWORD" | docker login $CI_REGISTRY --username $CI_REGISTRY_USER --password-stdin
   script:
     - docker build -t $IMAGE -t $IMAGE_LATEST .
     - docker push $IMAGE
@@ -34,6 +33,8 @@ test:
 
 release:
   stage: release
+  before_script:
+    - echo "$CI_REGISTRY_PASSWORD" | docker login $CI_REGISTRY --username $CI_REGISTRY_USER --password-stdin
   script:
     - echo "This is where the image switching should happen"
   only:
