@@ -1,7 +1,32 @@
+stages:
+  - build
+  - test
+  - release
+
+variables:
+  TEST_IMAGE: $CI_REGISTRY/skyvalley/auth:$CI_COMMIT_REF_NAME
+  RELEASE_IMAGE: $CI_REGISTRY/skyvalley/auth:latest
+
 before_script:
   - docker login -u $CI_REGISTRY_USER -p $CI_REGISTRY_PASSWORD $CI_REGISTRY
 
-build_image:
+build:
+  stage: build
   script:
-    - docker build -t $CI_REGISTRY/skyvalley/auth:$CI_COMMIT_SHA $CI_REGISTRY/skyvalley/auth:latest .
-    - docker push $CI_REGISTRY/skyvalley/auth
+    - docker build -t $TEST_IMAGE
+    - docker push $TEST_IMAGE
+
+test:
+  stage: test
+  script:
+    - echo "This is where the tests should run"
+
+release:
+  stage: release
+  script:
+    - docker pull $TEST_IMAGE
+    - docker tag $TEST_IMAGE $RELEASE_IMAGE
+    - docker push $RELEASE_IMAGE
+    - docker push $RELEASE_IMAGE
+  only:
+    - master
