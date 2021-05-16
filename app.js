@@ -29,8 +29,9 @@ app.post("/logout", (req, res) => {
     res.json({ "message": "You have been logged out successfully" })
 })
 // This route is protected from unauthorized access
-app.use(db.deserialize)
-app.delete("/delete", (req, res) => {
+// app.use(db.deserialize)
+app.delete("/delete", db.deserialize, (req, res) => {
+    // The username is brought from the token and not from the request body
     let username = req.data.user.username
     db.delete(username, res)
 //    Log the user out
@@ -39,4 +40,7 @@ app.delete("/delete", (req, res) => {
             throw err;
     })
 })
+app.all('*', (req, res, next) => {
+   res.status(405).send('Method not allowed');
+});
 module.exports = app.listen(3000, () => console.log("Server started"));

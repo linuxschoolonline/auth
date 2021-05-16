@@ -12,36 +12,39 @@ redisClient.on('error', err => {
 const jwt = require("jsonwebtoken");
 const exp = Math.floor(Date.now() / 1000) + parseInt(process.env.ACCESS_TOKEN_LIFE)
 exports.add = (user, res) => {
+    //Check that the request contains valid data
+    if (!user.username || !user.password || !user.name){
+        res.status(406).json({"message": "Empty or invalid user data"})
+        return
+    }
     getUser(user.username, (err, result) => {
         if (err) {
             throw err
         }
         if (result) {
             res.status(406).json({ "message": "The user already exists" })
-        } else {
-            bcrypt.genSalt(saltRounds, (err, salt) => {
+            return
+        }
+        bcrypt.genSalt(saltRounds, (err, salt) => {
+            if (err) {
+                throw err
+            }
+            bcrypt.hash(user.password, salt, (err, hash) => {
                 if (err) {
                     throw err
-                } else {
-                    bcrypt.hash(user.password, salt, (err, hash) => {
-                        if (err) {
-                            throw err
-                        } else {
-                            user.password = hash
-                            mongoClient.connect(uri, (err, client) => {
-                                const db = client.db("UserDB");
-                                db.collection('Users').insertOne(user, (err, result) => {
-                                    if (err) {
-                                        throw err;
-                                    }
-                                    res.status(201).json({ "message": "User created successfully" })
-                                });
-                            })
-                        }
-                    });
                 }
+                user.password = hash
+                mongoClient.connect(uri, (err, client) => {
+                    const db = client.db("UserDB");
+                    db.collection('Users').insertOne(user, (err, result) => {
+                        if (err) {
+                            throw err;
+                        }
+                        res.status(201).json({ "message": "User created successfully" })
+                    });
+                })
             });
-        }
+        });
     });
 };
 function getUser(username, callback) {
@@ -58,12 +61,15 @@ exports.deserialize = function deserialize(req,res,next){
     const authHeader = req.headers['authorization']
     const token = authHeader && authHeader.split(' ')[1]
     if (token == null) return res.sendStatus(401)
-    jwt.verify(token, process.env.ACCESS_TOKEN_SECRET, (err, data) => {
-        console.log(err)
-        if (err) throw err
-        req.data = data
-        next()
-    })
+    try {
+        jwt.verify(token, process.env.ACCESS_TOKEN_SECRET, (err, data) => {
+            if (err) throw  err
+            req.data = data
+            next()
+        })
+    } catch (e) {
+        res.status(400).json({"message":"invalid token"})
+    }
 }
 
 exports.login = (username, password, response) => {
@@ -119,7 +125,7 @@ exports.delete = (username,response) => {
                 }
             })
         } else {
-            response.status(426).json({ "message": "User does not exist" })
+            response.status(401).json({ "message": "User does not exist" })
         }
     })
 }
