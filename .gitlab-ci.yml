@@ -1,6 +1,7 @@
 stages:
   - build
   - test
+  - staging
   - release
 
 services:
@@ -35,6 +36,13 @@ test:
     - npm install
     - npm test
 
+staging:
+  stage: staging
+  trigger:
+    project: skyvalley/integration_tests
+    branch: master
+
+
 release:
   stage: release
   before_script:
@@ -43,3 +51,4 @@ release:
     - echo "This is where the image switching should happen"
   only:
     - master
+  when: manual
