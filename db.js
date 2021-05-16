@@ -29,7 +29,7 @@ exports.add = (user, res) => {
                         } else {
                             user.password = hash
                             mongoClient.connect(uri, (err, client) => {
-                                var db = client.db("UserDB")
+                                const db = client.db("UserDB");
                                 db.collection('Users').insertOne(user, (err, result) => {
                                     if (err) {
                                         throw err;
@@ -37,11 +37,11 @@ exports.add = (user, res) => {
                                     res.status(201).json({ "message": "User created successfully" })
                                 });
                             })
-                        };
+                        }
                     });
-                };
+                }
             });
-        };
+        }
     });
 };
 function getUser(username, callback) {
@@ -49,7 +49,7 @@ function getUser(username, callback) {
         if (err) {
             throw err
         } else {
-            var db = client.db("UserDB")
+            const db = client.db("UserDB");
             db.collection('Users').findOne({ "username": username }, callback)
         }
     })
@@ -101,18 +101,17 @@ exports.login = (username, password, response) => {
         }
     })
 }
-exports.delete = (req,response) => {
-    username = req.data.user.username
+exports.delete = (username,response) => {
     getUser(username, (err, result) => {
         if (result) {
             mongoClient.connect(uri, (err, client) => {
                 if (err) {
                     throw err
                 } else {
-                    var db = client.db("UserDB")
+                    const db = client.db("UserDB");
                     db.collection('Users').deleteOne({ "username": username }, (err, result) => {
                         if (err) {
-                            throw error
+                            throw err
                         } else {
                             response.json({ "message": "User deleted successfully" })
                         }

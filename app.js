@@ -10,26 +10,33 @@ redisClient.on('error', err => {
     process.exit(1)
 });
 app.post("/signup", (req, res) => {
-    user = {
+    let user = {
         "username": req.body.username,
         "name": req.body.name,
         "password": req.body.password
     }
-    result = db.add(user, res)
+    db.add(user, res)
 })
 app.post("/login", (req, res) => {
     db.login(req.body.username, req.body.password, res)
 });
 app.post("/logout", (req, res) => {
-    username = req.body.username
+    let username = req.body.username
     redisClient.del(username, (err, reply) => {
         if (err)
             throw err;
     })
     res.json({ "message": "You have been logged out successfully" })
 })
+// This route is protected from unauthorized access
 app.use(db.deserialize)
-app.post("/delete", (req, res) => {
-    db.delete(req, res)
+app.delete("/delete", (req, res) => {
+    let username = req.data.user.username
+    db.delete(username, res)
+//    Log the user out
+    redisClient.del(username, (err, reply) => {
+        if (err)
+            throw err;
+    })
 })
-app.listen(3000, () => console.log("Server started"));
+module.exports = app.listen(3000, () => console.log("Server started"));
