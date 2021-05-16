@@ -1,46 +1,40 @@
-#stages:
-#  - build
-#  - test
-#  - release
-#
-#services:
-#  - docker:19.03.12-dind
-#  - name: redis:latest
-#    alias: redis
-#
-#variables:
-#  DOCKER_TLS_CERTDIR: ""
-#  IMAGE: $CI_REGISTRY/skyvalley/auth:$CI_COMMIT_SHORT_SHA
-#  IMAGE_LATEST: $CI_REGISTRY/skyvalley/auth:latest
-#
-#before_script:
-#  - echo "$CI_REGISTRY_PASSWORD" | docker login $CI_REGISTRY --username $CI_REGISTRY_USER --password-stdin
-#
-#build:
-#  stage: build
-#  script:
-#    - docker build -t $IMAGE -t $IMAGE_LATEST .
-#    - docker push $IMAGE
-#    - docker push $IMAGE_LATEST
-#
-#test:
-#  stage: test
-#  script:
-#    - docker pull $IMAGE
-#    - docker run -e REDIS_HOST=redis -e REDIS_PORT=6379 $IMAGE
-#
-#release:
-#  stage: release
-#  script:
-#    - echo "This is where the image switching should happen"
-#  only:
-#    - master
+stages:
+  - build
+  - test
+  - release
 
 services:
-- redis
+  - docker:19.03.12-dind
+  - name: redis:latest
+    alias: redis
 
-connect:
-  # Connect to PostgreSQL database as user postgres, without password
-  image: redis
+variables:
+  DOCKER_TLS_CERTDIR: ""
+  IMAGE: $CI_REGISTRY/skyvalley/auth:$CI_COMMIT_SHORT_SHA
+  IMAGE_LATEST: $CI_REGISTRY/skyvalley/auth:latest
+
+before_script:
+  - echo "$CI_REGISTRY_PASSWORD" | docker login $CI_REGISTRY --username $CI_REGISTRY_USER --password-stdin
+
+build:
+  stage: build
   script:
-  - redis-cli -h redis PING
+    - docker build -t $IMAGE -t $IMAGE_LATEST .
+    - docker push $IMAGE
+    - docker push $IMAGE_LATEST
+
+test:
+  stage: test
+  image: node
+  variables:
+    REDIS_HOST: redis
+    REDIS_PORT: 6379
+  script:
+    - npm test
+
+release:
+  stage: release
+  script:
+    - echo "This is where the image switching should happen"
+  only:
+    - master
