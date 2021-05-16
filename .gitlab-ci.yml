@@ -3,5 +3,5 @@ before_script:
 
 build_image:
   script:
-    - docker build -t $CI_REGISTRY/auth .
+    - docker build -t $CI_REGISTRY/skyvalley/auth .
     - docker push $CI_REGISTRY/skyvalley/auth
