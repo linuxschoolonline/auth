@@ -1,9 +1,11 @@
+image: docker:19.03.12
 stages:
   - build
   - test
   - release
 
 services:
+  - docker:19.03.12-dind
   - name: redis:latest
     alias: redis
 
@@ -14,7 +16,7 @@ variables:
   REDIS_PORT: 6379
 
 before_script:
-  - docker login -u $CI_REGISTRY_USER -p $CI_REGISTRY_PASSWORD $CI_REGISTRY
+  - echo "$CI_PASSWORD" | docker login $CI_REGISTRY --username $CI_USER --password-stdin
 
 build:
   stage: build
