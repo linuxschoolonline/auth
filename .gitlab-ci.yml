@@ -5,7 +5,7 @@ stages:
   - release
 
 services:
-#  - docker:19.03.12-dind
+  - docker:19.03.12-dind
   - name: redis:latest
     alias: redis
 
