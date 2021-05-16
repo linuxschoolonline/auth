@@ -25,7 +25,8 @@ build:
 test:
   stage: test
   script:
-    - echo "This is where the tests should run"
+    - docker pull $IMAGE
+    - docker run $IMAGE
 
 release:
   stage: release
