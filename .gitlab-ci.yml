@@ -44,12 +44,7 @@ staging:
     name: bitnami/kubectl:latest
     entrypoint: [""]
   before_script:
-    - touch /tmp/config
-    - export KUBECONFIG=/tmp/config
-    - kubectl config set-cluster k8s --server="https://192.168.2.154:8443" --certificate-authority=${STAGING_CERTIFICATE_AUTHORITY_DATA}
-    - kubectl config set-credentials gitlab --client-certificate=${STAGING_USER_CERTIFICATE} --client-key=${STAGING_USER_KEY}
-    - kubectl config set-context default --cluster=k8s --user=gitlab
-    - kubectl config use-context default
+    - export KUBECONFIG=${KUBECONFIG_STAGING}
   script:
     - kubectl get nodes
 
