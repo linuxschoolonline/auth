@@ -44,6 +44,7 @@ staging:
     name: bitnami/kubectl:latest
     entrypoint: [""]
   before_script:
+    - export KUBECONFIG=/tmp/config
     - kubectl config set-cluster k8s --server="https://192.168.2.154:8443"
     - kubectl config set clusters.k8s.certificate-authority-data ${STAGING_CERTIFICATE_AUTHORITY_DATA}
     - kubectl config set users.k8s.client-key-data ${STAGING_USER_KEY}
