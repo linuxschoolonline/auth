@@ -46,10 +46,8 @@ staging:
   before_script:
     - touch /tmp/config
     - export KUBECONFIG=/tmp/config
-    - kubectl config set-cluster k8s --server="https://192.168.2.154:8443"
-    - kubectl config set clusters.k8s.certificate-authority-data ${STAGING_CERTIFICATE_AUTHORITY_DATA}
-    - kubectl config set users.k8s.client-key-data ${STAGING_USER_KEY}
-    - kubectl config set users.k8s.client-certificate-data ${STAGING_USER_CERTIFICATE}
+    - kubectl config set-cluster k8s --server="https://192.168.2.154:8443" --certificate-authority=${STAGING_CERTIFICATE_AUTHORITY_DATA}
+    - kubectl config set-credentials gitlab --client-certificate=${STAGING_USER_CERTIFICATE} --client-key=${STAGING_USER_KEY}
     - kubectl config set-context default --cluster=k8s --user=gitlab
     - kubectl config use-context default
   script:
