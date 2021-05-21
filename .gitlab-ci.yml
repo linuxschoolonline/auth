@@ -3,6 +3,7 @@ stages:
   - test
   - deploy
   - staging
+  - e2e
   - release
 
 services:
